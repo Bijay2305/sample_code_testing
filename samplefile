@@ -1,0 +1,21 @@
+import cv2
+
+# Load the image
+image = cv2.imread("image.jpg")
+
+# Initialize the QR detector
+detector = cv2.QRCodeDetector()
+
+# Detect the QR code in the image
+data, bbox, rectifiedImage = detector.detectAndDecode(image)
+
+if len(data) > 0:
+    # Draw a rectangle around the QR code
+    for i in range(len(bbox)):
+        cv2.line(image, tuple(bbox[i][0]), tuple(bbox[(i+1) % len(bbox)][0]), color=(255, 0, 0), thickness=2)
+
+    # Display the image with the QR code drawn
+    cv2.imshow("QR code", image)
+    cv2.waitKey(0)
+else:
+    print("QR code not detected")
