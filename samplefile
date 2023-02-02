@@ -19,3 +19,6 @@ if len(data) > 0:
     cv2.waitKey(0)
 else:
     print("QR code not detected")
+
+
+#https://github.com/cyberj0g/logo-detector
