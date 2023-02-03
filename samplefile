@@ -166,4 +166,38 @@ for qr_code in qr_codes:
 cv2.imshow("QR Codes", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
++++++++++++++++
+import cv2
+import pyzbar.pyzbar as pyzbar
 
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the DMCs in the image
+dmc_codes = pyzbar.decode(image, symbols=[pyzbar.ZBarSymbol.DATAMATRIX])
+
+# Print the data from each DMC
+for dmc_code in dmc_codes:
+    print(dmc_code.data.decode("utf-8"))
+ +++++
+ 
+ import cv2
+import pyzbar.pyzbar as pyzbar
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the DMCs in the image
+dmc_codes = pyzbar.decode(image, symbols=[pyzbar.ZBarSymbol.DATAMATRIX])
+
+# Draw rectangles around the DMCs
+for dmc_code in dmc_codes:
+    x, y, w, h = dmc_code.rect
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+# Show the image with the DMCs outlined
+cv2.imshow("DMC Codes", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+ 
