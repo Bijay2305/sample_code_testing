@@ -201,3 +201,36 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
  
+++++++
+import cv2
+import pylibdmtx.pylibdmtx as dmtx
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the DMC in the image
+message = dmtx.decode(image)
+
+# Print the data from the DMC
+print(message[0].data.decode("utf-8"))
++++++
+import cv2
+import pylibdmtx.pylibdmtx as dmtx
+import numpy as np
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the DMC in the image
+message = dmtx.decode(image)
+
+# Get the coordinates of the DMC in the image
+x, y, width, height = message[0].rect
+
+# Draw a rectangle around the DMC
+cv2.rectangle(image, (x, y), (x + width, y + height), (255, 0, 0), 2)
+
+# Plot the image with the DMC outlined
+cv2.imshow("DMC", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
