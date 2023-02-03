@@ -55,3 +55,115 @@ cv2.imshow("Text regions", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 +++++
+import cv2
+import pytesseract
+import pyzbar.pyzbar as pyzbar
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Convert the image to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Decode the barcodes in the image
+barcodes = pyzbar.decode(image)
+
+# Draw rectangles around the barcodes
+for barcode in barcodes:
+    x, y, w, h = barcode.rect
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    barcode_data = barcode.data.decode("utf-8")
+    cv2.putText(image, barcode_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+# Apply thresholding to the grayscale image to simplify the text regions
+thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+
+# Use pytesseract to detect the text regions
+text_regions = pytesseract.image_to_data(thresh, output_type=pytesseract.Output.DICT)
+
+# Draw rectangles around the text regions
+for i in range(0, len(text_regions["text"])):
+    x = text_regions["left"][i]
+    y = text_regions["top"][i]
+    w = text_regions["width"][i]
+    h = text_regions["height"][i]
+    text = text_regions["text"][i].strip()
+
+    if len(text) > 0:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+
+# Show the image with the text and barcode regions outlined
+cv2.imshow("Text and barcode regions", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+++++++
+QR_CODE 
+import cv2
+import pyzbar.pyzbar as pyzbar
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the QR codes in the image
+qr_codes = pyzbar.decode(image)
+
+# Draw rectangles around the QR codes
+for qr_code in qr_codes:
+    x, y, w, h = qr_code.rect
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    qr_code_data = qr_code.data.decode("utf-8")
+    cv2.putText(image, qr_code_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+# Show the image with the QR codes outlined
+cv2.imshow("QR Codes", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
++++++
+#To detect a logo in an image, you can use a technique called template matching in OpenCV. This involves creating a template image of the logo you want to detect and then using the cv2.matchTemplate function to search for matches in a larger image. Here's an example:
+import cv2
+import numpy as np
+
+# Load the template image
+template = cv2.imread("logo_template.png", cv2.IMREAD_GRAYSCALE)
+
+# Load the image you want to search for the logo in
+image = cv2.imread("image.png", cv2.IMREAD_GRAYSCALE)
+
+# Use cv2.matchTemplate to find matches of the template in the image
+result = cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
+
+# Find the coordinates of the highest-scoring match
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+
+# Draw a rectangle around the highest-scoring match
+top_left = max_loc
+bottom_right = (top_left[0] + template.shape[1], top_left[1] + template.shape[0])
+cv2.rectangle(image, top_left, bottom_right, (0, 0, 255), 2)
+
+# Show the image with the logo outlined
+cv2.imshow("Logo detection", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+++++
+#Note that the accuracy of the logo detection depends on the quality of the template image and the similarity between the template and the actual logo in the image. You may need to experiment with different template images and image processing techniques to improve the results.
+import cv2
+import pyzbar.pyzbar as pyzbar
+
+# Load the image
+image = cv2.imread("image.png")
+
+# Decode the QR codes in the image
+qr_codes = pyzbar.decode(image)
+
+# Draw rectangles around the QR codes
+for qr_code in qr_codes:
+    x, y, w, h = qr_code.rect
+    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    qr_code_data = qr_code.data.decode("utf-8")
+    cv2.putText(image, qr_code_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+
+# Show the image with the QR codes outlined
+cv2.imshow("QR Codes", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
