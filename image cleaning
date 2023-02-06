@@ -133,4 +133,64 @@ cv2.imshow('Numpy Vertical Concat', numpy_vertical_concat)
 cv2.imshow('Numpy Horizontal Concat', numpy_horizontal_concat)
 
 cv2.waitKey()
+++++++++++++++++
+
+Image cleaning refers to the process of removing noise and other unwanted elements from an image to make it more clear and usable. The steps involved in image cleaning can vary depending on the type and amount of noise in the image, but some common steps include:
+
+Denoising: Remove noise from the image using techniques such as median filtering, Gaussian smoothing, and non-local means denoising.
+Median filtering is a non-linear image processing technique used to remove salt-and-pepper noise from an image. Salt-and-pepper noise is a type of impulse noise where the image pixels are either black or white and randomly scattered across the image. This type of noise is usually introduced during image acquisition or image transmission.
+
+Median filtering is useful when:
+https://medium.com/@florestony5454/median-filtering-with-python-and-opencv-2bce390be0d1
+
+The image has salt-and-pepper noise: Median filtering is particularly useful for removing salt-and-pepper noise because it replaces the noisy pixels with the median value of the surrounding pixels.
+
+The noise is non-Gaussian: Median filtering is a non-linear method, so it can effectively remove non-Gaussian noise such as salt-and-pepper noise, while linear methods such as Gaussian smoothing may not be as effective.
+
+The image has sharp edges: Median filtering can preserve the sharp edges in an image while removing the noise, making it a good choice for images with high-frequency content.
+
+The image should not be smoothed: Median filtering does not introduce blurring or smoothing to the image, making it a good choice when the details in the image need to be preserved.
+
+These are some of the main reasons to use median filtering, but the specific use case may vary depending on the image, the type of noise, and the desired outcome.
+
+import cv2
+import numpy as np
+
+# Load the image and add salt-and-pepper noise
+img = cv2.imread('image.png', 0)
+noisy_img = img.copy()
+noisy_img[np.random.randint(0, img.shape[0], 500), np.random.randint(0, img.shape[1], 500)] = 255
+
+# Perform median filtering
+median_filtered_img = cv2.medianBlur(noisy_img, 3)
+
+# Display the original and filtered images
+cv2.imshow('Original Image', img)
+cv2.imshow('Noisy Image', noisy_img)
+cv2.imshow('Median Filtered Image', median_filtered_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+
+
+
+Image thresholding: Convert the image to a binary image using image thresholding techniques such as Otsu's thresholding, adaptive thresholding, and global thresholding.
+
+Morphological operations: Apply morphological operations such as erosion, dilation, opening, and closing to remove small objects, fill small holes, and smooth edges.
+
+Color correction: Correct the color of the image to improve its quality, such as adjusting the brightness, contrast, and saturation.
+
+Image scaling: Resize the image to a desired size to improve its clarity or reduce its size for storage.
+
+Image cropping: Crop the image to remove any unwanted regions or to focus on a specific region of interest.
+
+Image rotation: Rotate the image to correct its orientation or to align it with other images.
+
+Image restoration: Restore the image using techniques such as inpainting, deconvolution, and super-resolution to remove blurs, remove scratches, and enhance details.
+
+These are some of the common steps involved in image cleaning, but depending on the type of image and the desired outcome, additional steps may be required.
+
+
+
 
