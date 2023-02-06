@@ -1,0 +1,31 @@
+import cv2
+
+def display_image(image, window_name="Image"):
+    # Display the image in a window
+    cv2.imshow(window_name, image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+# Load an image
+image = cv2.imread("image.jpg")
+
+# Display the image using the function
+display_image(image)
++++++++
+import cv2
+import os
+
+# Specify the folder containing the images
+folder = "images"
+
+# Get a list of all the images in the folder
+images = [image for image in os.listdir(folder) if image.endswith(".jpg")]
+
+# Read the images using OpenCV
+images = [cv2.imread(os.path.join(folder, image)) for image in images]
+
+# Display the images using OpenCV
+for image in images:
+    cv2.imshow("Image", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
