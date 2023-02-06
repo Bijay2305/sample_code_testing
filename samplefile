@@ -234,3 +234,43 @@ cv2.rectangle(image, (x, y), (x + width, y + height), (255, 0, 0), 2)
 cv2.imshow("DMC", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+++++++++++++++++
+
+There are various techniques that can be used to enhance images, some of which include:
+
+Histogram Equalization: This method stretches the image's intensity distribution to span the entire intensity range, thereby enhancing the contrast.
+
+
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg", 0)
+equ = cv2.equalizeHist(img)
+cv2.imshow("Equalized Image", equ)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+++++
+CLAHE (Contrast Limited Adaptive Histogram Equalization): This is a modified version of Histogram Equalization that reduces over-amplification of noise in the image.
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg", 0)
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+cl1 = clahe.apply(img)
+cv2.imshow("CLAHE Image", cl1)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
++++++++++++
+Brightness and Contrast Adjustment: This involves changing the brightness and contrast levels of the image to make it appear clearer and more vivid.
+import cv2
+import numpy as np
+
+img = cv2.imread("image.jpg")
+img = cv2.convertScaleAbs(img, alpha=1.2, beta=10)
+cv2.imshow("Brightness and Contrast Adjusted Image", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
