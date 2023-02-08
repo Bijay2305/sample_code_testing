@@ -48,3 +48,30 @@ dst = cv2.warpPerspective(img,M,(cols,rows))
 
 # Save the corrected image
 cv2.imwrite("corrected_image.jpg", dst)
++++++++  
+removing relfections from a image 
+import cv2
+import numpy as np
+
+# Load the input image
+img = cv2.imread("image.jpg")
+
+# Convert the image to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Apply a median blur to reduce noise
+blur = cv2.medianBlur(gray, 5)
+
+# Threshold the image to create a binary mask
+threshold, mask = cv2.threshold(blur, 100, 255, cv2.THRESH_BINARY)
+
+# Invert the binary mask
+mask_inv = cv2.bitwise_not(mask)
+
+# Use the mask to extract the non-reflection regions of the image
+result = cv2.bitwise_and(img, img, mask=mask_inv)
+
+# Display the result
+cv2.imshow("Result", result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
