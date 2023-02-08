@@ -1,0 +1,24 @@
+#Perspective correction or perspective rectification is the process of correcting the perspective distortion in an image
+
+import cv2
+import numpy as np
+
+# Load the input image
+img = cv2.imread("image.jpg")
+
+# Define the coordinates of the four corners of the desired output image
+pts1 = np.float32([[0,0],[800,0],[0,800],[800,800]])
+
+# Find the coordinates of the four corners of the input image
+pts2 = np.float32([[0,0],[img.shape[1],0],[0,img.shape[0]],[img.shape[1],img.shape[0]]])
+
+# Compute the perspective transformation matrix
+M = cv2.getPerspectiveTransform(pts2, pts1)
+
+# Apply the perspective transformation to the input image
+result = cv2.warpPerspective(img, M, (800, 800))
+
+# Display the corrected image
+cv2.imshow("Perspective Correction", result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
