@@ -1,0 +1,41 @@
+https://www.analyticsvidhya.com/blog/2022/03/image-segmentation-using-opencv/
+
+
+Before image cleaning, some common image analysis techniques used include:
+
+Image Segmentation: Dividing an image into multiple regions or segments to simplify image analysis.
+##https://towardsdatascience.com/image-segmentation-part-1-9f3db1ac1c50
+
+import cv2
+import numpy as np
+
+# Load the input image
+img = cv2.imread("image.jpg")
+
+# Convert the image to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Apply Gaussian Blur to reduce noise
+blur = cv2.GaussianBlur(gray, (5,5), 0)
+
+# Apply Otsu's thresholding to segment the image into foreground and background
+threshold, binary = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+# Display the binary image
+cv2.imshow("Binary Image", binary)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+Feature Extraction: Identifying and extracting meaningful features or characteristics from an image, such as edges, corners, lines, etc.
+
+Image Histograms: Plotting the distribution of pixel intensities in an image to understand the image's overall intensity and contrast distribution.
+
+Template Matching: Comparing a template image with a target image to detect and locate objects or patterns.
+
+Object Recognition: Identifying objects within an image using machine learning algorithms, such as deep learning.
+
+Image Registration: Aligning or registering multiple images of the same scene to improve their quality or accuracy.
+
+Image Restoration: Removing noise, blur, or other distortions from an image to improve its quality.
+
