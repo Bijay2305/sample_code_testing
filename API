@@ -1,0 +1,63 @@
+from flask import Flask, redirect, request
+from flask import jsonify,make_response
+#from flask_api import status
+from stt_comparison import sentence_comparison
+import json
+from OpenSSL import SSL
+from healthcheck import HealthCheck
+
+#context = SSL.Context(SSL.SSLv23_METHOD)
+
+#context = ('/opt/epaas/certs/cert', '/opt/epaas/certs/key')
+vg = Flask(__name__)
+
+health = HealthCheck(vg, "/")
+#@vg.route('/')
+def health_check():
+    return "Health Check : [Successful] [OK]", status.HTTP_200_OK
+
+health.add_check(health_check)
+
+@vg.route('/comparison', methods=['POST'])
+def process_json():
+    #return "Health Check :process"
+    try:
+        content_type = request.headers.get('Content-Type')
+        if content_type == 'application/json':
+            string_val = request.json
+            print("Incoming String : "+str(string_val))
+            uuid = string_val["callId"]
+            cvp_text = string_val['textToValidate']
+            stt_text = string_val['spokenText']
+            if not uuid.strip() or not cvp_text.strip() or not stt_text.strip():
+                return jsonify({"error": "inputs should not be empty"})
+            output = sentence_comparison(cvp_text, stt_text)
+            output.update({"callId": uuid})
+            print(output)
+            if "error" in output:
+                return jsonify(output)
+            return jsonify(output)
+        else:
+            return 'Content-Type not supported!'
+    except Exception as e:
+        print(e)
+
+@vg.errorhandler(404)
+def not_found(error=None):
+    message = {
+        'status': 404,
+        'message': 'Not Found: ' + request.url,
+    }
+    return jsonify(message)
+
+@vg.errorhandler(400)
+def handle_400_error(error):
+    return make_response(jsonify({"error" : "Invalid Data"}))
+
+@vg.errorhandler(500)
+def handle_500_error(error):
+    return make_response(jsonify({"error" : "internal server error"}))
+
+
+if __name__ == '__main__':
+    vg.run(debug=True, host='0.0.0.0', port='8443')#, ssl_context=context)
