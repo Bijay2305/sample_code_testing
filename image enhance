@@ -433,3 +433,4 @@ python
 Copy code
 restored = cv2.inpaint(covered_img, mask, 3, cv2.INPAINT_TELEA)
 The cv2.threshold() function is used to create a binary image, which is then morphologically processed to fill in gaps and holes. The inverted binary image is then used to find contours, which are drawn onto a blank mask. Finally, the cv2.inpaint() function is used to fill in the obscured part of the original image using the mask. Note that this approach may not work for all types of coverage, and some degree of manual intervention may be necessary for more complex cases.
+#https://www.analyticsvidhya.com/blog/2021/05/image-processing-using-opencv-with-practical-examples/
