@@ -193,4 +193,15 @@ These are some of the common steps involved in image cleaning, but depending on 
 
 
 
+++++++++++++++++++++
+Image cleaning techniques refer to a set of methods used to remove noise and unwanted artifacts from digital images. Here are some commonly used techniques:
+    1. Image smoothing: This technique involves reducing the sharpness of edges and details in an image to remove noise. Popular image smoothing filters include Gaussian, Median, and Bilateral filters.
+    2. Image sharpening: This technique enhances the edges and details in an image to make it clearer. Popular image sharpening filters include Unsharp Masking (USM) and High-Pass Filtering.
+    3. Image denoising: This technique involves removing noise from an image. Popular image denoising filters include Non-local Means, Wavelet denoising, and Total Variation denoising.
+    4. Image inpainting: This technique is used to fill in missing or damaged parts of an image. Popular image inpainting methods include Patch-based inpainting and Exemplar-based inpainting.
+    5. Image compression: This technique involves reducing the size of an image while preserving its visual quality. Popular image compression methods include JPEG, PNG, and WebP.
+    6. Image resizing: This technique involves changing the size of an image. Popular image resizing methods include Bicubic Interpolation, Lanczos Resampling, and Nearest Neighbor Interpolation.
+    7. Image thresholding: This technique involves converting a grayscale image to a binary image by selecting a threshold value. Popular image thresholding techniques include Otsu's Method, Adaptive Thresholding, and Manual Thresholding.
+These are some of the commonly used image cleaning techniques, and they are often used in combination to achieve the
+
 
