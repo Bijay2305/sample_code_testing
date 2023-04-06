@@ -1,0 +1,21 @@
+layout pattern recognition from an imaged text 
+Layout pattern recognition from an imaged text involves identifying the layout of the text in an image. This can be useful for applications such as document analysis, where it is necessary to extract structured information from scanned documents.
+
+https://towardsdatascience.com/analyzing-document-layout-with-layoutparser-ed24d85f1d44
+
+
+One approach to layout pattern recognition from an imaged text is to use computer vision techniques to identify the position and orientation of text blocks, as well as the relative position of different elements within each block. Here are the general steps for performing layout pattern recognition from an imaged text:
+
+Text Detection: The first step is to detect the regions in the image that contain text. This can be done using techniques such as connected component analysis or stroke width transform.
+
+Text Segmentation: Once the text regions are detected, the next step is to segment the individual lines of text. This can be done using techniques such as projection profiles or contour analysis.
+
+Block Identification: After segmenting the lines of text, the next step is to identify the individual text blocks. This can be done using techniques such as clustering or bounding box analysis.
+
+Layout Analysis: Finally, once the individual text blocks are identified, the layout of the text within each block can be analyzed. This involves identifying the position and orientation of each element within the block, such as headings, paragraphs, or bullet points.
+
+Overall, performing layout pattern recognition from an imaged text can be a complex process that requires expertise in computer vision techniques such as image processing, pattern recognition, and machine learning. However, with the right tools and techniques, it is possible to extract structured information from scanned documents and other imaged texts.
+
+
+
+
