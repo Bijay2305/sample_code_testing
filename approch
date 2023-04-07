@@ -47,3 +47,32 @@ cv2.imshow('Original Image', image)
 cv2.imshow('Canny Edges', edges)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+++++++++++++++++++
+
+import cv2
+
+# Load the image
+img = cv2.imread('image.jpg')
+
+# Convert to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Apply thresholding to extract the DMC code
+_, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+
+# Find contours in the thresholded image
+contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Find the contour with the largest area (assumes the DMC code is the largest contour)
+largest_contour = max(contours, key=cv2.contourArea)
+
+# Get the bounding box of the largest contour
+x, y, w, h = cv2.boundingRect(largest_contour)
+
+# Draw a rectangle around the bounding box
+cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+# Display the result
+cv2.imshow('Result', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
