@@ -197,3 +197,5 @@ logger.addHandler(handler)
 logger.info('This is an info message.')
 
 ++++++++
+crop image particular 
+https://www.codementor.io/@innat_2k14/extract-a-particular-object-from-images-using-opencv-in-python-jfogyig5u
