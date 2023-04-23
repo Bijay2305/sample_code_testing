@@ -1,0 +1,31 @@
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img
+
+# Step 1: Load images and create an ImageDataGenerator instance
+img_dir = '/path/to/images/directory'
+img_paths = [os.path.join(img_dir, filename) for filename in os.listdir(img_dir)]
+datagen = ImageDataGenerator(
+    rotation_range=20,
+    zoom_range=0.2,
+    width_shift_range=0.1,
+    height_shift_range=0.1,
+    horizontal_flip=True,
+    vertical_flip=True
+)
+
+# Step 2: Generate new images for each image and save them to disk
+save_dir = '/path/to/save/directory'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
+
+for img_path in img_paths:
+    img = tf.keras.preprocessing.image.load_img(img_path, target_size=(224, 224))
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    
+    i = 0
+    for batch in datagen.flow(np.array([img_array]), batch_size=1, save_to_dir=save_dir, save_prefix='image', save_format='jpeg'):
+        i += 1
+        if i > 20:
+            break  # break the loop after generating 20 images for each input image
