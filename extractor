@@ -1,0 +1,30 @@
+import cv2
+from pyzbar.pyzbar import decode
+
+def decode_qr_code(image):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Decode the QR codes
+    qr_codes = decode(gray)
+
+    results = []
+    # Iterate over the detected QR codes
+    for qr_code in qr_codes:
+        # Extract the QR code data
+        qr_code_data = qr_code.data.decode('utf-8')
+
+        # Add the QR code data to the results
+        results.append(qr_code_data)
+
+    return results
+
+# Load the image using OpenCV
+image = cv2.imread('path/to/image.jpg')
+
+# Decode QR codes from the image
+qr_code_results = decode_qr_code(image)
+
+# Print the decoded QR code data
+for qr_code_data in qr_code_results:
+    print("QR Code Data:", qr_code_data)
