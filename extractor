@@ -28,3 +28,32 @@ qr_code_results = decode_qr_code(image)
 # Print the decoded QR code data
 for qr_code_data in qr_code_results:
     print("QR Code Data:", qr_code_data)
+++++++++++++++++++++++++++++++++++++++==
+import cv2
+from pyzbar.pyzbar import decode
+
+def read_qr_code(image_path):
+    # Load the image using OpenCV
+    image = cv2.imread(image_path)
+
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Decode the QR code
+    qr_codes = decode(gray)
+
+    # Extract and return the QR code data
+    if qr_codes:
+        qr_code_data = qr_codes[0].data.decode('utf-8')
+        return qr_code_data
+
+    return None
+
+# Example usage
+image_path = 'path/to/image.jpg'
+qr_code_data = read_qr_code(image_path)
+
+if qr_code_data:
+    print("QR Code Data:", qr_code_data)
+else:
+    print("No QR code detected in the image.")
