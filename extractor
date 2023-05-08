@@ -144,3 +144,48 @@ rotated_image = bring_image_to_standard_orientation(image_path)
 cv2.imshow('Rotated Image', rotated_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
++++++++++++++++++++++++++++++++++++++
+import cv2
+import piexif
+from PIL import Image
+
+def get_image_orientation(image_path):
+    # Load the image using PIL (Python Imaging Library)
+    pil_image = Image.open(image_path)
+
+    # Get the EXIF data of the image
+    exif_dict = piexif.load(pil_image.info["exif"])
+
+    # Find the orientation tag in the EXIF data
+    orientation = exif_dict.get("0th", {}).get(piexif.ImageIFD.Orientation)
+
+    # Return the orientation value
+    return orientation
+
+def bring_image_to_standard_orientation(image_path):
+    # Load the image using OpenCV
+    image = cv2.imread(image_path)
+
+    # Get the image orientation
+    orientation = get_image_orientation(image_path)
+
+    # Rotate the image to bring it to a standard orientation
+    if orientation == 3:
+        image = cv2.rotate(image, cv2.ROTATE_180)
+    elif orientation == 6:
+        image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+    elif orientation == 8:
+        image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+    # Return the rotated image
+    return image
+
+# Example usage
+image_path = 'path/to/image.jpg'
+rotated_image = bring_image_to_standard_orientation(image_path)
+
+# Display the rotated image
+cv2.imshow('Rotated Image', rotated_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
