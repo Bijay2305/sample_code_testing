@@ -24,3 +24,57 @@ normalized_image = gaussian_normalization(image)
 cv2.imshow('Normalized Image', normalized_image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
++++++++++++++
+import cv2
+import numpy as np
+
+# Read the input image
+image = cv2.imread('input_image.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Perform Canny edge detection
+edges = cv2.Canny(gray, 50, 150)
+
+# Perform Hough line transform
+lines = cv2.HoughLinesP(edges, 1, np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+
+# Draw detected lines on the original image
+if lines is not None:
+    for line in lines:
+        x1, y1, x2, y2 = line[0]
+        cv2.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+# Display the result
+cv2.imshow('Hough Transform', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+++++
+import cv2
+
+# Read the input image
+image = cv2.imread('input_image.jpg', 0)  # Convert to grayscale
+
+# Set initial threshold value
+initial_threshold = 100
+
+# Set threshold increment value
+threshold_increment = 20
+
+# Apply adaptive threshold with different threshold values
+for i in range(5):  # Change the range as needed
+    threshold_value = initial_threshold + i * threshold_increment
+
+    # Apply adaptive threshold
+    _, thresholded_image = cv2.threshold(image, threshold_value, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY)
+
+    # Generate filename based on the threshold value
+    filename = f"threshold_{threshold_value}.jpg"
+
+    # Save the thresholded image with the corresponding threshold value as the filename
+    cv2.imwrite(filename, thresholded_image)
+
+    print(f"Thresholded image saved: {filename}")
+
+print("Thresholding completed.")
+
