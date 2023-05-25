@@ -1,0 +1,37 @@
+import cv2
+import easyocr
+
+# Load the image
+image = cv2.imread('image_with_text.png')
+
+# Convert the image to grayscale
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Contrast enhancement
+clahe = cv2.createCLAHE(clipLimit=2.0)
+enhanced = clahe.apply(gray)
+
+# Denoising
+denoised = cv2.fastNlMeansDenoising(enhanced, None, h=10, templateWindowSize=7, searchWindowSize=21)
+
+# Initialize the OCR reader
+reader = easyocr.Reader(['en'])  # Specify the language(s) to recognize
+
+# Perform OCR on the enhanced image
+results = reader.readtext(denoised)
+
+# Iterate over the OCR results
+for (bbox, text, _) in results:
+    # Extract the bounding box coordinates
+    (tl, tr, br, bl) = bbox
+    
+    # Draw a rectangle around the text region
+    cv2.rectangle(image, tl, br, (0, 255, 0), 2)
+    
+    # Display the recognized text
+    print(f"Text: {text}")
+
+# Display the image with detected text regions
+cv2.imshow("Enhanced Image with Text", image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
