@@ -25,6 +25,12 @@ def extract_images_from_pdfs_folder(pdf_folder, output_folder):
                             if x_object[obj]['/Filter'] == '/DCTDecode':
                                 image_format = 'jpg'
                             elif x_object[obj]['/Filter'] == '/JPXDecode':
+                            
+                            
+                            
+                            
+                            
+                            
                                 image_format = 'jp2'
                             else:
                                 image_format = 'png'
@@ -41,3 +47,52 @@ pdf_folder = 'path_to_pdf_folder'
 output_folder = 'path_to_output_folder'
 
 extract_images_from_pdfs_folder(pdf_folder, output_folder)
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+import fitz
+
+def extract_images_from_pdf(pdf_path, output_folder):
+    doc = fitz.open(pdf_path)
+
+    for page_num in range(len(doc)):
+        page = doc.load_page(page_num)
+        image_list = page.get_images()
+
+        for image_index, image in enumerate(image_list):
+            xref = image[0]
+            base_image = doc.extract_image(xref)
+            image_data = base_image["image"]
+
+            image_format = base_image["ext"]
+            image_name = f"{output_folder}/image_{page_num+1}_{image_index+1}.{image_format}"
+
+            with open(image_name, "wb") as f:
+                f.write(image_data)
+
+    doc.close()
+
+# Usage example
+pdf_path = 'path_to_your_pdf.pdf'
+output_folder = 'path_to_output_folder'
+
+extract_images_from_pdf(pdf_path, output_folder)
+++++++++++++++++  pdf to image++++++++++++++
+
+import os
+from pdf2image import convert_from_path
+
+def extract_images_from_pdf(pdf_path, output_folder):
+    images = convert_from_path(pdf_path)
+
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for i, image in enumerate(images):
+        image_path = os.path.join(output_folder, f"image_{i+1}.jpg")
+        image.save(image_path, "JPEG")
+
+# Usage example
+pdf_path = 'path_to_your_pdf.pdf'
+output_folder = 'path_to_output_folder'
+
+extract_images_from_pdf(pdf_path, output_folder)
