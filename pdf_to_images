@@ -1,0 +1,43 @@
+import os
+import glob
+import PyPDF2
+from PIL import Image
+
+def extract_images_from_pdfs_folder(pdf_folder, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    pdf_files = glob.glob(f"{pdf_folder}/*.pdf")
+
+    for pdf_path in pdf_files:
+        pdf_file = open(pdf_path, 'rb')
+        pdf_reader = PyPDF2.PdfFileReader(pdf_file)
+
+        for page_num in range(pdf_reader.numPages):
+            page = pdf_reader.getPage(page_num)
+            if '/XObject' in page['/Resources']:
+                x_object = page['/Resources']['/XObject'].getObject()
+
+                for obj in x_object:
+                    if x_object[obj]['/Subtype'] == '/Image':
+                        image_data = x_object[obj]._data
+                        if '/Filter' in x_object[obj]:
+                            if x_object[obj]['/Filter'] == '/DCTDecode':
+                                image_format = 'jpg'
+                            elif x_object[obj]['/Filter'] == '/JPXDecode':
+                                image_format = 'jp2'
+                            else:
+                                image_format = 'png'
+                        else:
+                            image_format = 'png'
+
+                        image = Image.open(io.BytesIO(image_data))
+                        image.save(f"{output_folder}/{os.path.basename(pdf_path)}_{obj}.{image_format}")
+
+        pdf_file.close()
+
+# Usage example
+pdf_folder = 'path_to_pdf_folder'
+output_folder = 'path_to_output_folder'
+
+extract_images_from_pdfs_folder(pdf_folder, output_folder)
