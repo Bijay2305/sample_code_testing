@@ -1,0 +1,187 @@
+from PIL import Image, ImageOps
+import random
+
+def random_flip(image):
+    if random.random() < 0.5:
+        return ImageOps.flip(image)
+    return image
+
+def random_rotation(image, max_angle=30):
+    angle = random.randint(-max_angle, max_angle)
+    return image.rotate(angle)
+
+def random_color_jitter(image):
+    brightness_factor = random.uniform(0.8, 1.2)
+    contrast_factor = random.uniform(0.8, 1.2)
+    saturation_factor = random.uniform(0.8, 1.2)
+    hue_factor = random.uniform(-0.1, 0.1)
+
+    return ImageEnhance.Brightness(image).enhance(brightness_factor), \
+           ImageEnhance.Contrast(image).enhance(contrast_factor), \
+           ImageEnhance.Color(image).enhance(saturation_factor).enhance(hue_factor)
+
+def apply_data_augmentation(image_path):
+    original_image = Image.open(image_path)
+
+    # Flip the image horizontally or vertically
+    flipped_image = random_flip(original_image)
+
+    # Rotate the image
+    rotated_image = random_rotation(original_image)
+
+    # Apply color jittering
+    jittered_image = random_color_jitter(original_image)
+
+    # Save the augmented images
+    flipped_image.save("flipped_image.jpg")
+    rotated_image.save("rotated_image.jpg")
+    jittered_image[0].save("brightness_adjusted_image.jpg")
+    jittered_image[1].save("contrast_adjusted_image.jpg")
+    jittered_image[2].save("color_adjusted_image.jpg")
+
+if __name__ == "__main__":
+    image_path = "path_to_your_image.jpg"
+    apply_data_augmentation(image_path)
+
+
+
+from PIL import Image
+import numpy as np
+import random
+
+def add_gaussian_noise(image, mean=0, std=20):
+    np_image = np.array(image)
+    h, w, c = np_image.shape
+
+    # Generate random Gaussian noise
+    noise = np.random.normal(mean, std, (h, w, c))
+
+    # Clip the pixel values to [0, 255]
+    noisy_image = np.clip(np_image + noise, 0, 255).astype(np.uint8)
+
+    return Image.fromarray(noisy_image)
+
+def apply_data_augmentation(image_path):
+    original_image = Image.open(image_path)
+
+    # Add Gaussian noise to the image
+    noisy_image = add_gaussian_noise(original_image)
+
+    # Save the noisy image
+    noisy_image.save("noisy_image.jpg")
+
+if __name__ == "__main__":
+    image_path = "path_to_your_image.jpg"
+    apply_data_augmentation(image_path)
+from PIL import Image
+import numpy as np
+import os
+
+def add_gaussian_noise(image, mean=0, std=20):
+    np_image = np.array(image)
+    h, w, c = np_image.shape
+
+    # Generate random Gaussian noise
+    noise = np.random.normal(mean, std, (h, w, c))
+
+    # Clip the pixel values to [0, 255]
+    noisy_image = np.clip(np_image + noise, 0, 255).astype(np.uint8)
+
+    return Image.fromarray(noisy_image)
+
+def apply_noise_to_images_in_folder(input_folder, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    image_files = os.listdir(input_folder)
+    for file_name in image_files:
+        image_path = os.path.join(input_folder, file_name)
+        output_path = os.path.join(output_folder, f"noisy_{file_name}")
+
+        original_image = Image.open(image_path)
+
+        # Add Gaussian noise to the image
+        noisy_image = add_gaussian_noise(original_image)
+
+        # Save the noisy image
+        noisy_image.save(output_path)
+
+if __name__ == "__main__":
+    input_folder = "path_to_input_folder"
+    output_folder = "path_to_output_folder"
+    apply_noise_to_images_in_folder(input_folder, output_folder)
++++++++++++++++
+from PIL import Image
+import os
+
+def generate_rotated_images(original_image, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for angle in range(0, 360):
+        rotated_image = original_image.rotate(angle)
+
+        # Save the rotated image with a filename that includes the degree
+        filename = f"rotated_{angle:03d}.jpg"
+        output_path = os.path.join(output_folder, filename)
+        rotated_image.save(output_path)
+
+if __name__ == "__main__":
+    input_image_path = "path_to_input_image.jpg"
+    output_folder = "path_to_output_folder"
+
+    original_image = Image.open(input_image_path)
+    generate_rotated_images(original_image, output_folder)
+
+from PIL import Image, ImageEnhance, ImageOps
+import random
+import os
+
+def random_flip(image):
+    if random.random() < 0.5:
+        return ImageOps.flip(image)
+    return image
+
+def random_rotation(image, max_angle=30):
+    angle = random.randint(-max_angle, max_angle)
+    return image.rotate(angle)
+
+def random_color_jitter(image):
+    brightness_factor = random.uniform(0.8, 1.2)
+    contrast_factor = random.uniform(0.8, 1.2)
+    saturation_factor = random.uniform(0.8, 1.2)
+    hue_factor = random.uniform(-0.1, 0.1)
+
+    return ImageEnhance.Brightness(image).enhance(brightness_factor), \
+           ImageEnhance.Contrast(image).enhance(contrast_factor), \
+           ImageEnhance.Color(image).enhance(saturation_factor).enhance(hue_factor)
+
+def apply_combined_transformations(image_path, output_folder, num_augmented_images=5):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    original_image = Image.open(image_path)
+
+    for i in range(num_augmented_images):
+        # Create a sequence of transformations
+        transformations = [
+            random_flip,
+            random_rotation,
+            random_color_jitter
+        ]
+
+        # Apply the transformations to the original image
+        augmented_image = original_image.copy()
+        for transform in transformations:
+            augmented_image = transform(augmented_image)
+
+        # Save the augmented image with a unique filename
+        filename = f"augmented_image_{i}.jpg"
+        output_path = os.path.join(output_folder, filename)
+        augmented_image.save(output_path)
+
+if __name__ == "__main__":
+    image_path = "path_to_your_image.jpg"
+    output_folder = "path_to_output_folder"
+    apply_combined_transformations(image_path, output_folder)
+
