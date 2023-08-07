@@ -1,0 +1,205 @@
+import boto3
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# AWS credentials (replace with your own)
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+
+# S3 bucket names (replace with your own)
+source_bucket_name = 'source-bucket'
+destination_bucket_name = 'destination-bucket'
+
+# Boto3 S3 clients
+s3_resource = boto3.resource('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+source_bucket = s3_resource.Bucket(source_bucket_name)
+destination_bucket = s3_resource.Bucket(destination_bucket_name)
+
+@app.route('/process_image', methods=['POST'])
+def process_image():
+    # Get the image key (filename) from the request
+    if 'image_key' not in request.form:
+        return jsonify({'error': 'Missing image_key parameter'}), 400
+    image_key = request.form['image_key']
+
+    try:
+        # Read the image from the source bucket
+        image_object = source_bucket.Object(image_key)
+        image_data = image_object.get()['Body'].read()
+
+        # Store the image in the destination bucket
+        destination_bucket.put_object(Key=image_key, Body=image_data)
+
+        return jsonify({'message': 'Image processed and stored successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
++++++++++++++++++++++++++++++++++
+
+
+from flask import Flask, request, jsonify
+import psycopg2
+
+app = Flask(__name__)
+
+# PostgreSQL database connection parameters
+db_params = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Endpoint to handle image upload and database insertion
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    # Get the session_id, case_id, and image data from the request
+    session_id = request.form.get('session_id')
+    case_id = request.form.get('case_id')
+    image = request.files.get('image')
+
+    # Insert the data into the PostgreSQL database
+    try:
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        # Convert image data to binary and insert into the database
+        binary_image = psycopg2.Binary(image.read())
+        query = "INSERT INTO images (session_id, case_id, image_data) VALUES (%s, %s, %s)"
+        cursor.execute(query, (session_id, case_id, binary_image))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Image and metadata stored successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
++++++++++++++++++++++++++
+from flask import Flask, request, jsonify
+import cv2
+import numpy as np
+import psycopg2
+
+app = Flask(__name__)
+
+# PostgreSQL database connection parameters
+db_params = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Function to enhance the image
+def enhance_image(image):
+    # Implement your image enhancement techniques here
+    # For example, you can use OpenCV functions like cv2.equalizeHist() or cv2.adjustContrast()
+
+    return image
+
+# Endpoint to handle image upload, enhancement, and database insertion
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    # Get the image data from the request
+    image = request.files.get('image').read()
+    np_arr = np.frombuffer(image, np.uint8)
+    img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    # Enhance the image
+    enhanced_image = enhance_image(img)
+
+    # Convert the enhanced image to binary
+    _, image_encoded = cv2.imencode('.jpg', enhanced_image)
+    binary_image = psycopg2.Binary(image_encoded)
+
+    # Insert the enhanced image into the PostgreSQL database
+    try:
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        # Replace 'your_table_name' with the name of your table in the database
+        query = "INSERT INTO your_table_name (image_data) VALUES (%s)"
+        cursor.execute(query, (binary_image,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Image enhanced and stored successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
+++++++++++++++++++++++
+from flask import Flask, request, jsonify
+import psycopg2
+import numpy as np
+import cv2
+
+app = Flask(__name__)
+
+# PostgreSQL database connection parameters
+db_params = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Function to process and enhance the image (optional)
+def process_image(image):
+    # Implement your image processing and enhancement techniques here (if required)
+    # For example, you can use OpenCV functions to enhance the image
+
+    return image
+
+# Endpoint to handle image upload, processing, and database insertion
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    # Get the session_id and case_id from the request
+    session_id = request.form.get('session_id')
+    case_id = request.form.get('case_id')
+
+    # Get the image data from the request
+    image = request.files.get('image').read()
+    np_arr = np.frombuffer(image, np.uint8)
+    img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    # Process and enhance the image (optional)
+    # If you don't require image processing, you can skip this step
+    processed_image = process_image(img)
+
+    # Convert the processed image to binary
+    _, image_encoded = cv2.imencode('.jpg', processed_image)
+    binary_image = psycopg2.Binary(image_encoded)
+
+    # Insert the data into the PostgreSQL database
+    try:
+        conn = psycopg2.connect(**db_params)
+        cursor = conn.cursor()
+
+        # Replace 'your_table_name' with the name of your table in the database
+        query = "INSERT INTO your_table_name (session_id, case_id, image_data) VALUES (%s, %s, %s)"
+        cursor.execute(query, (session_id, case_id, binary_image))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Image and metadata stored successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
