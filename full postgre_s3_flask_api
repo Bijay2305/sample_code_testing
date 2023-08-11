@@ -1,0 +1,385 @@
+from flask import Flask, request, jsonify
+import boto3
+import cv2
+import numpy as np
+
+app = Flask(__name__)
+
+# AWS credentials (replace with your own)
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+S3_BUCKET_NAME = 'your_s3_bucket_name'
+
+# Boto3 S3 client
+s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+# Function to enhance the image
+def enhance_image(image):
+    # Implement your image enhancement techniques here
+    # For example, you can use OpenCV functions like cv2.equalizeHist() or cv2.adjustContrast()
+
+    return image
+
+@app.route('/upload_and_enhance', methods=['POST'])
+def upload_and_enhance():
+    try:
+        # Get the case_id from the request
+        case_id = request.form.get('case_id')
+
+        # Get the image data from the request
+        image = request.files.get('image').read()
+        np_arr = np.frombuffer(image, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        # Enhance the image
+        enhanced_image = enhance_image(img)
+
+        # Convert the enhanced image to binary
+        _, image_encoded = cv2.imencode('.jpg', enhanced_image)
+        binary_image = image_encoded.tobytes()
+
+        # Upload the enhanced image to S3
+        s3_filename = f'{case_id}.jpg'
+        s3_client.put_object(Body=binary_image, Bucket=S3_BUCKET_NAME, Key=s3_filename)
+
+        return jsonify({'message': f'Enhanced image stored in S3 with filename: {s3_filename}'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
+++++++++++++++++++++
+
+from flask import Flask, request, jsonify
+import boto3
+import cv2
+import numpy as np
+import pytesseract
+import psycopg2
+
+app = Flask(__name__)
+
+# AWS credentials (replace with your own)
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+S3_BUCKET_NAME = 'your_s3_bucket_name'
+
+# PostgreSQL database connection parameters
+DB_PARAMS = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Boto3 S3 client
+s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+# Function to enhance the image
+def enhance_image(image):
+    # Implement your image enhancement techniques here
+    # For example, you can use OpenCV functions like cv2.equalizeHist() or cv2.adjustContrast()
+
+    return image
+
+@app.route('/upload_enhance_ocr', methods=['POST'])
+def upload_enhance_ocr():
+    try:
+        # Get the case_id from the request
+        case_id = request.form.get('case_id')
+
+        # Get the image data from the request
+        image = request.files.get('image').read()
+        np_arr = np.frombuffer(image, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        # Enhance the image
+        enhanced_image = enhance_image(img)
+
+        # Convert the enhanced image to binary
+        _, image_encoded = cv2.imencode('.jpg', enhanced_image)
+        binary_image = image_encoded.tobytes()
+
+        # Upload the enhanced image to S3
+        s3_filename = f'{case_id}.jpg'
+        s3_client.put_object(Body=binary_image, Bucket=S3_BUCKET_NAME, Key=s3_filename)
+
+        # Perform OCR on the enhanced image
+        ocr_result = pytesseract.image_to_string(enhanced_image)
+
+        # Store the OCR result in PostgreSQL database
+        conn = psycopg2.connect(**DB_PARAMS)
+        cursor = conn.cursor()
+        query = "INSERT INTO ocr_results (case_id, ocr_text) VALUES (%s, %s)"
+        cursor.execute(query, (case_id, ocr_result))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': f'Enhanced image stored in S3 and OCR result stored in database'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
+++++ next+++ 
+from flask import Flask, request, jsonify
+import boto3
+import cv2
+import numpy as np
+import pytesseract
+import psycopg2
+
+app = Flask(__name__)
+
+# AWS credentials (replace with your own)
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+S3_BUCKET_NAME = 'your_s3_bucket_name'
+
+# PostgreSQL database connection parameters
+DB_PARAMS = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Boto3 S3 client
+s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+# Function to enhance the image
+def enhance_image(image):
+    # Implement your image enhancement techniques here
+    # For example, you can use OpenCV functions like cv2.equalizeHist() or cv2.adjustContrast()
+
+    return image
+
+@app.route('/upload_enhance_ocr', methods=['POST'])
+def upload_enhance_ocr():
+    try:
+        # Get the case_id from the request
+        case_id = request.form.get('case_id')
+
+        # Get the image data from the request
+        image = request.files.get('image').read()
+        np_arr = np.frombuffer(image, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        # Enhance the image
+        enhanced_image = enhance_image(img)
+
+        # Convert the enhanced image to binary
+        _, image_encoded = cv2.imencode('.jpg', enhanced_image)
+        binary_image = image_encoded.tobytes()
+
+        # Upload the enhanced image to S3
+        s3_filename = f'{case_id}.jpg'
+        s3_client.put_object(Body=binary_image, Bucket=S3_BUCKET_NAME, Key=s3_filename)
+
+        # Perform OCR on the enhanced image
+        ocr_result = pytesseract.image_to_string(enhanced_image)
+
+        # Store the OCR result in PostgreSQL database
+        conn = psycopg2.connect(**DB_PARAMS)
+        cursor = conn.cursor()
+        query = "INSERT INTO ocr_results (case_id, ocr_text) VALUES (%s, %s) RETURNING id"
+        cursor.execute(query, (case_id, ocr_result))
+        ocr_id = cursor.fetchone()[0]
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        response_data = {
+            'message': f'Enhanced image stored in S3 and OCR result stored in database',
+            'enhanced_image_url': f'https://{S3_BUCKET_NAME}.s3.amazonaws.com/{s3_filename}',
+            'ocr_result_id': ocr_id,
+            'ocr_result': ocr_result
+        }
+
+        return jsonify(response_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
++++++++++++++++++++  Asy+++++++++++++++++
+from flask import Flask, request, jsonify
+import boto3
+import cv2
+import numpy as np
+import pytesseract
+import psycopg2
+import asyncio
+
+app = Flask(__name__)
+
+# AWS credentials (replace with your own)
+AWS_ACCESS_KEY_ID = 'your_access_key_id'
+AWS_SECRET_ACCESS_KEY = 'your_secret_access_key'
+S3_BUCKET_NAME = 'your_s3_bucket_name'
+
+# PostgreSQL database connection parameters
+DB_PARAMS = {
+    'dbname': 'your_dbname',
+    'user': 'your_username',
+    'password': 'your_password',
+    'host': 'your_host',
+    'port': 'your_port',
+}
+
+# Boto3 S3 client
+s3_client = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+
+# Function to enhance the image
+def enhance_image(image):
+    # Implement your image enhancement techniques here
+    # For example, you can use OpenCV functions like cv2.equalizeHist() or cv2.adjustContrast()
+
+    return image
+
+async def upload_to_s3(filename, binary_data):
+    await asyncio.sleep(1)  # Simulating asynchronous behavior
+    s3_filename = f'{filename}.jpg'
+    s3_client.put_object(Body=binary_data, Bucket=S3_BUCKET_NAME, Key=s3_filename)
+    return s3_filename
+
+async def store_ocr_result(case_id, ocr_result):
+    conn = psycopg2.connect(**DB_PARAMS)
+    cursor = conn.cursor()
+    query = "INSERT INTO ocr_results (case_id, ocr_text) VALUES (%s, %s) RETURNING id"
+    cursor.execute(query, (case_id, ocr_result))
+    ocr_id = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return ocr_id
+
+@app.route('/upload_enhance_ocr', methods=['POST'])
+def upload_enhance_ocr():
+    try:
+        # Get the case_id from the request
+        case_id = request.form.get('case_id')
+
+        # Get the image data from the request
+        image = request.files.get('image').read()
+        np_arr = np.frombuffer(image, np.uint8)
+        img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        # Enhance the image
+        enhanced_image = enhance_image(img)
+
+        # Convert the enhanced image to binary
+        _, image_encoded = cv2.imencode('.jpg', enhanced_image)
+        binary_image = image_encoded.tobytes()
+
+        # Perform OCR on the enhanced image
+        ocr_result = pytesseract.image_to_string(enhanced_image)
+
+        # Asynchronously upload the enhanced image to S3 and store OCR result in database
+        loop = asyncio.get_event_loop()
+        s3_task = loop.create_task(upload_to_s3(case_id, binary_image))
+        ocr_task = loop.create_task(store_ocr_result(case_id, ocr_result))
+
+        loop.run_until_complete(asyncio.gather(s3_task, ocr_task))
+
+        response_data = {
+            'message': f'Enhanced image stored in S3 and OCR result stored in database',
+            'enhanced_image_url': f'https://{S3_BUCKET_NAME}.s3.amazonaws.com/{s3_task.result()}',
+            'ocr_result_id': ocr_task.result(),
+            'ocr_result': ocr_result
+        }
+
+        return jsonify(response_data), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True)
++++++++ with config++ 
+
+1: Create a Configuration File
+# config.py
+
+# Development environment
+DEV_DB_PARAMS = {
+    'dbname': 'dev_dbname',
+    'user': 'dev_username',
+    'password': 'dev_password',
+    'host': 'dev_host',
+    'port': 'dev_port',
+}
+
+DEV_S3_CONFIG = {
+    'aws_access_key_id': 'dev_access_key_id',
+    'aws_secret_access_key': 'dev_secret_access_key',
+    'bucket_name': 'dev_bucket_name',
+}
+
+# Test environment
+TEST_DB_PARAMS = {
+    'dbname': 'test_dbname',
+    'user': 'test_username',
+    'password': 'test_password',
+    'host': 'test_host',
+    'port': 'test_port',
+}
+
+TEST_S3_CONFIG = {
+    'aws_access_key_id': 'test_access_key_id',
+    'aws_secret_access_key': 'test_secret_access_key',
+    'bucket_name': 'test_bucket_name',
+}
+
+# Production environment
+PROD_DB_PARAMS = {
+    'dbname': 'prod_dbname',
+    'user': 'prod_username',
+    'password': 'prod_password',
+    'host': 'prod_host',
+    'port': 'prod_port',
+}
+
+PROD_S3_CONFIG = {
+    'aws_access_key_id': 'prod_access_key_id',
+    'aws_secret_access_key': 'prod_secret_access_key',
+    'bucket_name': 'prod_bucket_name',
+}
+++++++++++++++++  Import Configuration in Your Flask Application:+++++++++++++++++++++++
+# app.py
+from flask import Flask, request, jsonify
+import boto3
+import cv2
+import numpy as np
+import pytesseract
+import psycopg2
+from config import DEV_DB_PARAMS, DEV_S3_CONFIG  # Adjust imports for other environments
+
+app = Flask(__name__)
+
+# Boto3 S3 client
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=DEV_S3_CONFIG['aws_access_key_id'],
+    aws_secret_access_key=DEV_S3_CONFIG['aws_secret_access_key']
+)
+
+# ...
+
+# Use DEV_DB_PARAMS for database connection in this example
+conn = psycopg2.connect(**DEV_DB_PARAMS)
++++Switch Between Environments:+++
+# Development
+export FLASK_ENV=dev
+python app.py
+
+# Test
+export FLASK_ENV=test
+python app.py
+
+# Production
+export FLASK_ENV=prod
+python app.py
+++++++++++++++++++++  
