@@ -1,0 +1,20 @@
+import pytesseract
+from PIL import Image
+
+# Path to the Tesseract executable (adjust this based on your system)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Path to the directory containing the language data files
+tessdata_dir_config = r'--tessdata-dir "path/to/tessdata"'
+
+def extract_chinese_text(image_path):
+    try:
+        image = Image.open(image_path)
+        text = pytesseract.image_to_string(image, lang='chi_sim', config=tessdata_dir_config)
+        return text
+    except Exception as e:
+        return str(e)
+
+image_path = 'path/to/your/image.png'
+chinese_text = extract_chinese_text(image_path)
+print(chinese_text)
