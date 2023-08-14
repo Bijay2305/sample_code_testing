@@ -1,0 +1,22 @@
+import boto3
+
+# Replace with your S3 bucket name
+BUCKET_NAME = 'your-bucket-name'
+
+# Path to the image you want to upload
+FILE_PATH = 'path/to/your/image.jpg'
+
+# Create an S3 client
+s3_client = boto3.client('s3')
+
+# Upload the image to S3
+def upload_image_to_s3(file_path, bucket_name):
+    try:
+        file_name = file_path.split('/')[-1]
+        s3_client.upload_file(file_path, bucket_name, file_name)
+        return f'Successfully uploaded {file_name} to {bucket_name}'
+    except Exception as e:
+        return str(e)
+
+result = upload_image_to_s3(FILE_PATH, BUCKET_NAME)
+print(result)
