@@ -383,3 +383,11 @@ python app.py
 export FLASK_ENV=prod
 python app.py
 ++++++++++++++++++++  
+
+# Upload the enhanced image to S3
+        object_key = f'{case_id}_enhanced.jpg'
+        s3_client.upload_fileobj(BytesIO(enhanced_image_buffer), S3_BUCKET_NAME, object_key)
+
+        # Generate S3 URL for the enhanced image
+        s3_url = f'https://{S3_BUCKET_NAME}.s3.amazonaws.com/{object_key}'
+
