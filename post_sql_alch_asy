@@ -1,0 +1,212 @@
+DB.Models 
+
+# ... (previous code)
+
+# Model for storing OCR results and image information
+class OCRResult(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    case_id = db.Column(db.String(50), nullable=False)
+    image_path = db.Column(db.String(200), nullable=False)
+    ocr_text = db.Column(db.Text, nullable=True)
+
+# API route to upload an image, perform OCR, and insert OCR results into the database
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    try:
+        if 'image' not in request.files:
+            return jsonify({'error': 'No image part'}), 400
+
+        case_id = request.form.get('case_id')
+        if not case_id:
+            return jsonify({'error': 'Case ID is required'}), 400
+
+        image = request.files['image']
+        if image.filename == '':
+            return jsonify({'error': 'No selected image'}), 400
+        
+        # Save the image to a temporary location
+        image_path = os.path.join('uploads', image.filename)
+        image.save(image_path)
+        
+        # Perform OCR on the image
+        ocr_text = perform_ocr(image_path)
+        
+        # Store OCR results, case ID, and image information in the database
+        new_ocr_result = OCRResult(case_id=case_id, image_path=image_path, ocr_text=ocr_text)
+        db.session.add(new_ocr_result)
+        db.session.commit()
+        
+        return jsonify({'message': 'Image uploaded, OCR performed, and results inserted into the database'}), 200
+    
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({'error': f'Database Error: {str(e)}'}), 500
+    except Exception as e:
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
+
+# ... (remaining code)
+
+HELM ____
+
+# Deploy to the "dev" stage
+helm install my-flask-api . --set stage=dev
+
+# Deploy to the "test" stage
+helm install my-flask-api . --set stage=test
+
+# Deploy to the "prod" stage
+helm install my-flask-api . --set stage=prod
+
+
+___
+
+s this will work the postgre sql as well & show the example how to connect & insert Db.Model to a existing table 
+ChatGPT
+Yes, SQLAlchemy works with PostgreSQL as well. In fact, SQLAlchemy supports multiple relational database management systems, including PostgreSQL, MySQL, SQLite, and more.
+
+Here's an example of how to connect to an existing PostgreSQL database and define a Db.Model that maps to an existing table:
+
+Install Required Libraries:
+Install the required libraries if you haven't already:
+
+bash
+Copy code
+pip install Flask Flask-SQLAlchemy psycopg2
+Initialize Flask App and Connect to PostgreSQL:
+In your Flask app file (e.g., app.py), set up the Flask app and connect to the PostgreSQL database:
+
+python
+Copy code
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@host:port/database_name'
+db = SQLAlchemy(app)
+Replace username, password, host, port, and database_name with your PostgreSQL database connection details.
+
+Define a Model for an Existing Table:
+Assuming you have an existing table named customers in your PostgreSQL database, here's how you can define a Db.Model that maps to it:
+
+python
+Copy code
+class Customer(db.Model):
+    __tablename__ = 'customers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    email = db.Column(db.String(100))
+
+    def __repr__(self):
+        return f'<Customer {self.first_name} {self.last_name}>'
+In this example, the Customer class maps to the customers table. You specify the table name using the __tablename__ attribute, and then define the columns using db.Column instances.
+
+Query and Insert Data:
+You can now query and insert data into the customers table using the Customer class:
+
+python
+Copy code
+# Querying data
+customers = Customer.query.all()
+for customer in customers:
+    print(customer.first_name, customer.last_name)
+
+# Inserting data
+new_customer = Customer(first_name='John', last_name='Doe', email='john.doe@example.com')
+db.session.add(new_customer)
+db.session.commit()
+Remember to replace the connection details, table name, and column names with your actual PostgreSQL setup.
+
+This example demonstrates how to connect to an existing PostgreSQL database, define a Db.Model that maps to an existing table, and perform querying and insertion operations.
+
++++++++++++++++++++++++++
+can we make this asy call 
+ChatGPT
+Certainly! You can use asynchronous calls in a Flask application by utilizing asynchronous features provided by Python libraries. Here's how you can modify the example to include asynchronous calls using the asyncio library:
+
+Install Required Libraries:
+Install the required libraries if you haven't already:
+
+bash
+Copy code
+pip install Flask Flask-SQLAlchemy psycopg2-binary
+Initialize Flask App and Connect to PostgreSQL:
+In your Flask app file (e.g., app.py), set up the Flask app and connect to the PostgreSQL database as before:
+
+python
+Copy code
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@host:port/database_name'
+db = SQLAlchemy(app)
+Replace the placeholders with your PostgreSQL database connection details.
+
+Define an Asynchronous Model:
+Define an asynchronous Customer model that maps to the customers table:
+
+python
+Copy code
+class Customer(db.Model):
+    __tablename__ = 'customers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
+    email = db.Column(db.String(100))
+
+    def __repr__(self):
+        return f'<Customer {self.first_name} {self.last_name}>'
+
+# Define an asynchronous function to query customers
+async def get_customers():
+    return await db.session.execute(Customer.query)
+
+# Define an asynchronous function to add a new customer
+async def add_customer(first_name, last_name, email):
+    new_customer = Customer(first_name=first_name, last_name=last_name, email=email)
+    db.session.add(new_customer)
+    await db.session.commit()
+Create Asynchronous Endpoints:
+Create asynchronous Flask endpoints that utilize the asynchronous functions:
+
+python
+Copy code
+from flask import request, jsonify
+
+@app.route('/customers', methods=['GET'])
+async def get_customers_endpoint():
+    customers = await get_customers()
+    customer_list = [{'first_name': customer.first_name, 'last_name': customer.last_name} for customer in customers]
+    return jsonify(customer_list)
+
+@app.route('/add_customer', methods=['POST'])
+async def add_customer_endpoint():
+    data = request.json
+    first_name = data['first_name']
+    last_name = data['last_name']
+    email = data['email']
+    await add_customer(first_name, last_name, email)
+    return jsonify({'message': 'Customer added successfully'})
+Run the Application:
+Run the Flask application using the app.run() method:
+
+python
+Copy code
+if __name__ == '__main__':
+    app.run(debug=True)
+Now you have an asynchronous Flask application with asynchronous endpoints that perform database operations using the asyncio library.
+
+Keep in mind that this example provides a basic demonstration of asynchronous calls in a Flask application. For production use, you might need to consider additional factors like error handling, concurrency, and proper setup for running asynchronous code in a web environment.
+
+
+
+
+
+
+
+
+
+
